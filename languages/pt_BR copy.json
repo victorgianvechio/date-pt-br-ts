@@ -1,0 +1,21 @@
+{
+  "day": "dia",
+  "week": {
+    "singular": "semana",
+    "plural": "semanas",
+    "weekDay": {
+      "sunday": "Domingo",
+      "monday": "Segunda-Feira",
+      "tuesday": "Terça-Feira",
+      "wednesday": "Quarta-Feira",
+      "thursday": "Quinta-Feira",
+      "friday": "Sexta-Feira",
+      "saturday": "Sábado"
+    }
+  },
+  "month": "mês",
+  "ano": "ano",
+  "hour": "hora",
+  "minute": "minuto",
+  "second": "segundo"
+}
