@@ -1,3 +1,17 @@
+import {
+  LanguageType,
+  pt_BR,
+  EN,
+  DE,
+  FR,
+  ES,
+} from "./lib/languages/index.ts";
+
+    // Deno.readTextFile('./languages/pt_BR.json').then(data => {
+    //   const d = JSON.parse(data);
+    //   console.log(d.day)
+    // })
+
 interface ApiData {
   city: string;
   regionName: string;
@@ -18,24 +32,30 @@ interface CfgData {
 
 class DatePtBR {
   // Date and Time variables
-  private day: string;
-  private monthNumber: string;
+  private day: number;
+  private strDay: string;
+  private monthNumber: number;
+  private strMonthNumber: string;
   private month: string;
-  private year: string;
-  private weekdayNumber: string;
+  private year: number;
+  private weekdayNumber: number;
   private weekday: string;
-  private hour: string;
-  private minute: string;
-  private second: string;
+  private hour: number;
+  private strHour: string;
+  private minute: number;
+  private strMinute: string;
+  private second: number;
+  private strSecond: string;
   private descHour: string;
   private descMinute: string;
   private descSecond: string;
   private date: Date;
+  private formattedDate: String;
 
   // Locale variables
   private city: string;
   private region: string;
-  private shortRegion: string;
+  private regionCode: string;
   private country: string;
   private countryCode: string;
   private timezone: string;
@@ -52,26 +72,35 @@ class DatePtBR {
   private sepDate: string;
   private sepTime: string;
 
-  constructor() {
+  // Language
+  private language: LanguageType;
+
+  constructor(language: LanguageType) {
     // Date and Time variables
-    this.day = "";
-    this.monthNumber = "";
+    this.day = 0;
+    this.strDay = "";
+    this.monthNumber = 0;
+    this.strMonthNumber = "";
     this.month = "";
-    this.year = "";
-    this.weekdayNumber = "";
+    this.year = 0;
+    this.weekdayNumber = 0;
     this.weekday = "";
-    this.hour = "";
-    this.minute = "";
-    this.second = "";
+    this.hour = 0;
+    this.strHour = "";
+    this.minute = 0;
+    this.strMinute = "";
+    this.second = 0;
+    this.strSecond = "";
     this.descHour = "";
     this.descMinute = "";
     this.descSecond = "";
     this.date = new Date();
+    this.formattedDate = "";
 
     // Locale variables
     this.city = "";
     this.region = "";
-    this.shortRegion = "";
+    this.regionCode = "";
     this.country = "";
     this.countryCode = "";
     this.timezone = "";
@@ -79,7 +108,7 @@ class DatePtBR {
 
     // Date validations variables
     this.isValidDate = true;
-    this.invalidDate = "";
+    this.invalidDate = "Invalid Date";
 
     // Config variables
     this.delimiterDate = "";
@@ -88,27 +117,21 @@ class DatePtBR {
     this.sepDate = "";
     this.sepTime = "";
 
-    // Config variables
-    this.setDefaultConfig();
+    // Language
+    this.language = language;
+
+    // Set config variables
+    this.setDefaultConfig(language);
   }
 
   // Set default config variables
-  public setDefaultConfig(): void {
-    switch (this.countryCode) {
-      case "BR":
-        this.delimiterDate = "/";
-        this.delimiterTime = ":";
-        this.sepDateTime = ", ";
-        this.sepDate = " de ";
-        this.sepTime = " e ";
-        break;
-      case "EN":
-        this.delimiterDate = "/";
-        this.delimiterTime = ":";
-        this.sepDateTime = ", ";
-        this.sepDate = " of ";
-        this.sepTime = " and ";
-        break;
+  public setDefaultConfig(language: LanguageType): void {
+    if (language === pt_BR) {
+      this.delimiterDate = "/";
+      this.delimiterTime = ":";
+      this.sepDateTime = ", ";
+      this.sepDate = " de ";
+      this.sepTime = " e ";
     }
   }
 
@@ -123,353 +146,378 @@ class DatePtBR {
 
   private dateNow(date: Date): void {
     try {
-      this.isValidDate = true
-      this.date = new Date(date)
+      this.isValidDate = true;
+      this.date = new Date(date);
 
-      if (this.invalidDate === 'Invalid Date') throw new Error(`${date} is not a valid date`)
+      if (this.date.toString() === "Invalid Date") {
+        throw new Error(`${date} is not a valid date`);
+      }
 
-      this.day = String(this.date.getDate());
-      this.monthNumber = String(this.date.getMonth() + 1);
-      this.year = String(this.date.getFullYear());
-      this.weekdayNumber = String(this.date.getDay() + 1);
-      this.hour = String(this.date.getHours());
-      this.minute = String(this.date.getMinutes());
-      this.second = String(this.date.getSeconds());
+      this.day = this.date.getDate();
+      this.monthNumber = this.date.getMonth() + 1;
+      this.year = this.date.getFullYear();
+      this.weekdayNumber = this.date.getDay() + 1;
+      this.hour = this.date.getHours();
+      this.minute = this.date.getMinutes();
+      this.second = this.date.getSeconds();
 
-      if (this.day.toString().length === 1) this.day = '0' + this.day
+      if (this.day.toString().length === 1) {
+        this.strDay = "0" + this.day.toString();
+      } else this.strDay = this.day.toString();
 
-      if (this.monthNumber.toString().length === 1) this.monthNumber = '0' + this.monthNumber
+      if (this.monthNumber.toString().length === 1) {
+        this.strMonthNumber = "0" + this.monthNumber.toString();
+      } else this.strMonthNumber = this.monthNumber.toString();
 
-      if (this.hour.toString().length === 1) this.hour = '0' + this.hour
+      if (this.hour.toString().length === 1) {
+        this.strHour = "0" + this.hour.toString();
+      } else this.strHour = this.hour.toString();
 
-      if (this.minute.toString().length === 1) this.minute = '0' + this.minute
+      if (this.minute.toString().length === 1) {
+        this.strMinute = "0" + this.minute.toString();
+      } else this.strMinute = this.minute.toString();
 
-      if (this.second.toString().length === 1) this.second = '0' + this.second
+      if (this.second.toString().length === 1) {
+        this.strSecond = "0" + this.second.toString();
+      } else this.strSecond = this.second.toString();
 
-      if (this.hour !== '01') this.descHour = 'horas'
-      else this.descHour = 'hora'
+      if (this.hour !== 1) this.descHour = "horas";
+      else this.descHour = "hora";
 
-      if (this.minute !== '01') this.descMinute = 'minutos'
-      else this.descMinute = 'minuto'
+      if (this.minute !== 1) this.descMinute = "minutos";
+      else this.descMinute = "minuto";
 
-      if (this.second !== '01') this.descSecond = 'segundos'
-      else this.descSecond = 'segundo'
+      if (this.second !== 1) this.descSecond = "segundos";
+      else this.descSecond = "segundo";
 
       switch (this.weekdayNumber) {
         case 1:
-          this.weekday = 'Domingo'
-          break
+          this.weekday = "domingo";
+          break;
         case 2:
-          this.weekday = 'Segunda-Feira'
-          break
+          this.weekday = "segunda";
+          break;
         case 3:
-          this.weekday = 'Terça-Feira'
-          break
+          this.weekday = "terça";
+          break;
         case 4:
-          this.weekday = 'Quarta-Feira'
-          break
+          this.weekday = "quarta";
+          break;
         case 5:
-          this.weekday = 'Quinta-Feira'
-          break
+          this.weekday = "quinta";
+          break;
         case 6:
-          this.weekday = 'Sexta-Feira'
-          break
+          this.weekday = "sexta";
+          break;
         case 7:
-          this.weekday = 'Sábado'
-          break
+          this.weekday = "sábado";
+          break;
       }
 
-      switch (String(this.monthNumber)) {
-        case '01':
-          this.month = 'Janeiro'
-          break
-        case '02':
-          this.month = 'Fevereiro'
-          break
-        case '03':
-          this.month = 'Março'
-          break
-        case '04':
-          this.month = 'Abril'
-          break
-        case '05':
-          this.month = 'Maio'
-          break
-        case '06':
-          this.month = 'Junho'
-          break
-        case '07':
-          this.month = 'Julho'
-          break
-        case '08':
-          this.month = 'Agosto'
-          break
-        case '09':
-          this.month = 'Setembro'
-          break
-        case '10':
-          this.month = 'Outubro'
-          break
-        case '11':
-          this.month = 'Novembro'
-          break
-        case '12':
-          this.month = 'Dezembro'
-          break
+      switch (this.monthNumber) {
+        case 1:
+          this.month = "janeiro";
+          break;
+        case 2:
+          this.month = "fevereiro";
+          break;
+        case 3:
+          this.month = "março";
+          break;
+        case 4:
+          this.month = "abril";
+          break;
+        case 5:
+          this.month = "maio";
+          break;
+        case 6:
+          this.month = "junho";
+          break;
+        case 7:
+          this.month = "julho";
+          break;
+        case 8:
+          this.month = "agosto";
+          break;
+        case 9:
+          this.month = "setembro";
+          break;
+        case 10:
+          this.month = "outubro";
+          break;
+        case 11:
+          this.month = "novembro";
+          break;
+        case 12:
+          this.month = "dezembro";
+          break;
+      }
+
+      if (this.language === pt_BR || DE || ES || FR) {
+        this.formattedDate =
+          `${this.strDay}${this.delimiterDate}${this.strMonthNumber}${this.delimiterDate}${this.year}`;
+      } else if (this.language === EN) {
+        this.formattedDate =
+          `${this.strMonthNumber}${this.delimiterDate}${this.strDay}${this.delimiterDate}${this.year}`;
       }
     } catch (err) {
-        this.isDateValid = false
+      this.isValidDate = false;
     }
   }
 
   // Date Functions
-  getDay(date = new Date()) {
+  public getDay(date = new Date()): number | string {
     this.dateNow(date);
-    return this.isDateValid ? this.day : this.invalidDate;
+    return this.isValidDate ? this.day : this.invalidDate;
   }
 
-  getMonthNumber(date = new Date()) {
+  public getMonthNumber(date = new Date()): number | string {
     this.dateNow(date);
-    return this.isDateValid ? this.monthNumber : this.invalidDate;
+    return this.isValidDate ? this.monthNumber : this.invalidDate;
   }
 
-  getMonth(date = new Date()) {
+  public getMonth(date = new Date()): string {
     this.dateNow(date);
-    return this.isDateValid ? this.month : this.invalidDate;
+    return this.isValidDate ? this.month : this.invalidDate;
   }
 
-  getShortMonth(date = new Date()) {
+  public getShortMonth(date = new Date()): string {
     this.dateNow(date);
-    return this.isDateValid
-      ? String(this.month).substr(0, 3)
+    return this.isValidDate ? this.month.substr(0, 3) : this.invalidDate;
+  }
+
+  public getYear(date = new Date()): number | string {
+    this.dateNow(date);
+    return this.isValidDate ? this.year : this.invalidDate;
+  }
+
+  public getShortYear(date = new Date()): number | string {
+    this.dateNow(date);
+    return this.isValidDate
+      ? Number(this.year.toString().substr(2, 2))
       : this.invalidDate;
   }
 
-  getYear(date = new Date()) {
+  public getWeekdayNumber(date = new Date()): number | string {
     this.dateNow(date);
-    return this.isDateValid ? this.year : this.invalidDate;
+    return this.isValidDate ? this.weekdayNumber : this.invalidDate;
   }
 
-  getShortYear(date = new Date()) {
+  public getWeekday(date = new Date()): string {
     this.dateNow(date);
-    return this.isDateValid ? String(this.year).substr(2, 4) : this.invalidDate;
+    return this.isValidDate ? this.weekday : this.invalidDate;
   }
 
-  getWeekdayNumber(date = new Date()) {
+  public getShortWeekday(date = new Date()): string {
     this.dateNow(date);
-    return this.isDateValid ? this.weekdayNumber : this.invalidDate;
+    return this.isValidDate ? this.weekday.substr(0, 3) : this.invalidDate;
   }
 
-  getWeekday(date = new Date()) {
+  public getDate(date = new Date()): string {
     this.dateNow(date);
-    return this.isDateValid ? this.weekday : this.invalidDate;
+
+    return this.isValidDate ? `${this.formattedDate}` : this.invalidDate;
   }
 
-  getDate(date = new Date()) {
+  public getExtendedDate(date = new Date()): string {
     this.dateNow(date);
-    return this.isDateValid
-      ? `${this.day}${this.delimiterDate}${this.monthNumber}${this.delimiterDate}${this.year}`
+    return this.isValidDate
+      ? `${this.strDay}${this.sepDate}${this.month}${this.sepDate}${this.year}`
       : this.invalidDate;
   }
 
-  getExtendedDate(date = new Date()) {
+  public getExtendedWeekdayDate(date = new Date()): string {
     this.dateNow(date);
-    return this.isDateValid
-      ? `${this.day}${this.sepDate}${this.month}${this.sepDate}${this.year}`
+    return this.isValidDate
+      ? `${this.weekday}, ${this.strDay}${this.sepDate}${this.month}${this.sepDate}${this.year}`
       : this.invalidDate;
   }
 
-  getExtendedWeekdayDate(date = new Date()) {
+  public getMonthYear(date = new Date()): string {
     this.dateNow(date);
-    return this.isDateValid
-      ? `${this.weekday}, ${this.day}${this.sepDate}${this.month}${this.sepDate}${this.year}`
-      : this.invalidDate;
-  }
-
-  getMonthYear(date = new Date()) {
-    this.dateNow(date);
-    return this.isDateValid
+    return this.isValidDate
       ? `${this.month}${this.delimiterDate}${this.year}`
       : this.invalidDate;
   }
 
-  getShortMonthYear(date = new Date()) {
+  public getShortMonthYear(date = new Date()): string {
     this.dateNow(date);
-    return this.isDateValid
-      ? `${String(this.month).substr(0, 3)}${this.delimiterDate}${this.year}`
+    return this.isValidDate
+      ? `${this.month.substr(0, 3)}${this.delimiterDate}${this.year}`
       : this.invalidDate;
   }
 
-  getShortMonthShortYear(date = new Date()) {
+  public getShortMonthShortYear(date = new Date()): string {
     this.dateNow(date);
-    return this.isDateValid
-      ? `${String(this.month).substr(0, 3)}${this.delimiterDate}${
-        String(this.year).substr(
-          2,
-          4,
-        )
+    return this.isValidDate
+      ? `${this.month.substr(0, 3)}${this.delimiterDate}${
+        this.year.toString().substr(2, 4)
       }`
       : this.invalidDate;
   }
 
-  getMonthNumberYear(date = new Date()) {
+  public getMonthNumberYear(date = new Date()): string {
     this.dateNow(date);
-    return this.isDateValid
-      ? `${this.monthNumber}${this.delimiterDate}${this.year}`
+    return this.isValidDate
+      ? `${this.strMonthNumber}${this.delimiterDate}${this.year}`
       : this.invalidDate;
   }
 
-  getHour(date = new Date()) {
+  public getHour(date = new Date()): number | string {
     this.dateNow(date);
-    return this.isDateValid ? this.hour : this.invalidDate;
+    return this.isValidDate ? this.hour : this.invalidDate;
   }
 
-  getExtendedHour(date = new Date()) {
+  public getExtendedHour(date = new Date()): string {
     this.dateNow(date);
-    return this.isDateValid
-      ? `${this.hour} ${this.descHour}`
+    return this.isValidDate
+      ? `${this.strHour} ${this.descHour}`
       : this.invalidDate;
   }
 
-  getMinute(date = new Date()) {
+  public getMinute(date = new Date()): number | string {
     this.dateNow(date);
-    return this.isDateValid ? this.minute : this.invalidDate;
+    return this.isValidDate ? this.minute : this.invalidDate;
   }
 
-  getExtendedMinute(date = new Date()) {
+  public getExtendedMinute(date = new Date()): string {
     this.dateNow(date);
-    return this.isDateValid
-      ? `${this.minute} ${this.descMinute}`
+    return this.isValidDate
+      ? `${this.strMinute} ${this.descMinute}`
       : this.invalidDate;
   }
 
-  getSecond(date = new Date()) {
+  public getSecond(date = new Date()): number | string {
     this.dateNow(date);
-    return this.isDateValid ? this.second : this.invalidDate;
+    return this.isValidDate ? this.second : this.invalidDate;
   }
 
-  getExtendedSecond(date = new Date()) {
+  public getExtendedSecond(date = new Date()): string {
     this.dateNow(date);
-    return this.isDateValid
-      ? `${this.second} ${this.descSecond}`
+    return this.isValidDate
+      ? `${this.strSecond} ${this.descSecond}`
       : this.invalidDate;
   }
 
-  getTime(date = new Date()) {
+  public getTime(date = new Date()): string {
     this.dateNow(date);
-    return this.isDateValid
-      ? `${this.hour}${this.delimiterTime}${this.minute}${this.delimiterTime}${this.second}`
+    return this.isValidDate
+      ? `${this.strHour}${this.delimiterTime}${this.strMinute}${this.delimiterTime}${this.strSecond}`
       : this.invalidDate;
   }
 
-  getHourMinute(date = new Date()) {
+  public getHourMinute(date = new Date()): string {
     this.dateNow(date);
-    return this.isDateValid
-      ? `${this.hour}${this.delimiterTime}${this.minute}`
+    return this.isValidDate
+      ? `${this.strHour}${this.delimiterTime}${this.strMinute}`
       : this.invalidDate;
   }
 
-  getExtendedTime(date = new Date()) {
+  public getExtendedTime(date = new Date()): string {
     this.dateNow(date);
-    return this.isDateValid
-      ? `${this.hour} ${this.descHour}${this.sepTime}${this.minute} ${this.descMinute}${this.sepTime}${this.second} ${this.descSecond}`
+    return this.isValidDate
+      ? `${this.strHour} ${this.descHour}${this.sepTime}${this.strMinute} ${this.descMinute}${this.sepTime}${this.strSecond} ${this.descSecond}`
       : this.invalidDate;
   }
 
-  getExtendedHourMinute(date = new Date()) {
+  public getExtendedHourMinute(date = new Date()): string {
     this.dateNow(date);
-    return this.isDateValid
-      ? `${this.hour} ${this.descHour}${this.sepTime}${this.minute} ${this.descMinute}`
+    return this.isValidDate
+      ? `${this.strHour} ${this.descHour}${this.sepTime}${this.strMinute} ${this.descMinute}`
       : this.invalidDate;
   }
 
-  getDateTime(date = new Date()) {
+  public getDateTime(date = new Date()): string {
     this.dateNow(date);
-    return this.isDateValid
-      ? `${this.day}${this.delimiterDate}${this.monthNumber}${this.delimiterDate}${this.year}${this.sepDateTime}${this.hour}${this.delimiterTime}${this.minute}${this.delimiterTime}${this.second}`
+    return this.isValidDate
+      ? `${this.strDay}${this.delimiterDate}${this.strMonthNumber}${this.delimiterDate}${this.year}${this.sepDateTime}${this.strHour}${this.delimiterTime}${this.strMinute}${this.delimiterTime}${this.strSecond}`
       : this.invalidDate;
   }
 
-  getExtendedDateTime(date = new Date()) {
+  public getExtendedDateTime(date = new Date()): string {
     this.dateNow(date);
-    return this.isDateValid
-      ? `${this.day}${this.sepDate}${this.month}${this.sepDate}${this.year}${this.sepDateTime}${this.hour} ${this.descHour}${this.sepTime}${this.minute} ${this.descMinute}${this.sepTime}${this.second} ${this.descSecond}`
+    return this.isValidDate
+      ? `${this.strDay}${this.sepDate}${this.month}${this.sepDate}${this.year}${this.sepDateTime}${this.strHour} ${this.descHour}${this.sepTime}${this.strMinute} ${this.descMinute}${this.sepTime}${this.strSecond} ${this.descSecond}`
       : this.invalidDate;
   }
 
-  async getExtendedCityDate(date = new Date()) {
+  public async getExtendedCityDate(date = new Date()): Promise<string> {
     this.dateNow(date);
     await this.getCity();
-    return this.isDateValid
-      ? `${this.city}, ${this.day}${this.sepDate}${this.month}${this.sepDate}${this.year}`
+    return this.isValidDate
+      ? `${this.city}, ${this.strDay}${this.sepDate}${this.month}${this.sepDate}${this.year}`
       : this.invalidDate;
   }
 
-  async getExtendedRegionDate(date = new Date()) {
+  public async getExtendedRegionDate(date = new Date()): Promise<string> {
     this.dateNow(date);
     await this.getRegion();
-    return this.isDateValid
-      ? `${this.region}, ${this.day}${this.sepDate}${this.month}${this.sepDate}${this.year}`
+    return this.isValidDate
+      ? `${this.region}, ${this.strDay}${this.sepDate}${this.month}${this.sepDate}${this.year}`
       : this.invalidDate;
   }
 
-  async getExtendedShortRegionDate(date = new Date()) {
+  public async getExtendedRegionCodeDate(date = new Date()): Promise<string> {
     this.dateNow(date);
-    await this.getShortRegion();
-    return this.isDateValid
-      ? `${this.shortRegion}, ${this.day}${this.sepDate}${this.month}${this.sepDate}${this.year}`
+    await this.getRegionCode();
+    return this.isValidDate
+      ? `${this.regionCode}, ${this.strDay}${this.sepDate}${this.month}${this.sepDate}${this.year}`
       : this.invalidDate;
   }
 
-  async getExtendedCountryDate(date = new Date()) {
+  public async getExtendedCountryDate(date = new Date()): Promise<string> {
     this.dateNow(date);
     await this.getCountry();
-    return this.isDateValid
-      ? `${this.country}, ${this.day}${this.sepDate}${this.month}${this.sepDate}${this.year}`
+    return this.isValidDate
+      ? `${this.country}, ${this.strDay}${this.sepDate}${this.month}${this.sepDate}${this.year}`
       : this.invalidDate;
   }
 
-  async getExtendedShortCountryDate(date = new Date()) {
+  public async getExtendedShortCountryDate(date = new Date()): Promise<string> {
     this.dateNow(date);
-    await this.getShortCountry();
-    return this.isDateValid
-      ? `${this.shortCountry}, ${this.day}${this.sepDate}${this.month}${this.sepDate}${this.year}`
+    await this.getCountryCode();
+    return this.isValidDate
+      ? `${this.countryCode}, ${this.strDay}${this.sepDate}${this.month}${this.sepDate}${this.year}`
       : this.invalidDate;
   }
 
-  async getCity() {
+  public async getCity(): Promise<string> {
     if (this.city === "") await this.getLocaleInfo();
     return this.city;
   }
 
-  async getRegion() {
+  public async getRegion(): Promise<string> {
     if (this.region === "") await this.getLocaleInfo();
     return this.region;
   }
 
-  async getShortRegion() {
-    if (this.shortRegion === "") await this.getLocaleInfo();
-    return this.shortRegion;
+  public async getRegionCode(): Promise<string> {
+    if (this.regionCode === "") await this.getLocaleInfo();
+    return this.regionCode;
   }
 
-  async getCountry() {
+  public async getCountry(): Promise<string> {
     if (this.country === "") await this.getLocaleInfo();
     return this.country;
   }
 
-  async getShortCountry() {
-    if (this.shortCountry === "") await this.getLocaleInfo();
-    return this.shortCountry;
+  public async getCountryCode(): Promise<string> {
+    if (this.countryCode === "") await this.getLocaleInfo();
+    return this.countryCode;
   }
 
-  async getTimezone() {
+  public async getTimezone(): Promise<string> {
     if (this.timezone === "") await this.getLocaleInfo();
     return this.timezone;
   }
 
-  async getZipcode() {
+  public async getZipcode(): Promise<string> {
     if (this.zipcode === "") await this.getLocaleInfo();
     return this.zipcode;
+  }
+
+  private capitalize(text: string) {
+    return text[0].toUpperCase() + text.slice(1);
   }
 
   private async getLocaleInfo(): Promise<void> {
@@ -477,12 +525,141 @@ class DatePtBR {
 
     this.city = data.city;
     this.region = data.regionName;
-    this.shortRegion = data.region;
+    this.regionCode = data.region;
     this.country = data.country;
     this.countryCode = data.countryCode;
     this.timezone = data.timezone;
     this.zipcode = data.zip;
   }
+
+  public async formatPattern(
+    pattern: string,
+    date = new Date(),
+  ): Promise<string> {
+    this.dateNow(date);
+    await this.getLocaleInfo();
+    let formattedDate = pattern;
+
+    // Full Date
+    formattedDate = formattedDate.replaceAll("'date'", this.getDate()); // => 25/02/2020
+
+    // Full time
+    formattedDate = formattedDate.replaceAll("'time'", this.getTime()); // => 15:21:03
+
+    // Day
+    formattedDate = formattedDate.replaceAll("'d'", this.day.toString()); // => 1, 2
+    formattedDate = formattedDate.replaceAll("'dd'", this.strDay); // => 01, 02
+
+    // Month
+    formattedDate = formattedDate.replaceAll("'m'", this.monthNumber.toString()); // => 1, 2
+    formattedDate = formattedDate.replaceAll("'mm'", this.strMonthNumber); // => 01, 02
+    formattedDate = formattedDate.replaceAll("'mmm'", this.getShortMonth()); // => jan
+    formattedDate = formattedDate.replaceAll("'mmmm'", this.month); // => janeiro
+    formattedDate = formattedDate.replaceAll(
+      "'MMM'",
+      this.capitalize(this.getShortMonth()),
+    ); // => Jan
+    formattedDate = formattedDate.replaceAll(
+      "'MMMM'",
+      this.capitalize(this.month),
+    ); // => Janeiro
+
+    // Year
+    formattedDate = formattedDate.replaceAll("'yyyy'", this.year.toString()); // => 2020
+    formattedDate = formattedDate.replaceAll("'yy'", this.getShortYear.toString()); // => 20
+
+    // Week
+    formattedDate = formattedDate.replaceAll("'w'", this.weekdayNumber.toString()); // => 1,2,3
+    formattedDate = formattedDate.replaceAll("'ww'", this.getShortWeekday()); // => seg, ter, qua
+    formattedDate = formattedDate.replaceAll("'www'", this.weekday); // => segunda, terça, quarta
+    formattedDate = formattedDate.replaceAll("'wwww'", this.weekday + "-feira"); // => segunda-feira, terça-feira, quarta-feira
+    formattedDate = formattedDate.replaceAll(
+      "'WW'",
+      this.capitalize(this.getShortWeekday()),
+    ); // => Seg, Ter, Qua
+    formattedDate = formattedDate.replaceAll(
+      "'WWW'",
+      this.capitalize(this.weekday),
+    ); // => Segunda, Terça, Quarta
+    formattedDate = formattedDate.replaceAll(
+      "'WWWW'",
+      this.capitalize(this.weekday) + "-feira",
+    ); // => Segunda-feira, Terça-feira, Quarta-feira
+
+    // Hour
+    formattedDate = formattedDate.replaceAll("'h'", this.hour.toString()); // => 1,2,3
+    formattedDate = formattedDate.replaceAll("'hh'", this.strHour); // => 01,02,03
+    formattedDate = formattedDate.replaceAll(
+      "'hhh'",
+      this.hour.toString() + this.descHour,
+    ); // => 1 hour, 10 hours
+    formattedDate = formattedDate.replaceAll(
+      "'hhhh'",
+      this.strHour + this.descHour,
+    ); // => 01 hour, 10 hours
+    formattedDate = formattedDate.replaceAll(
+      "'HHH'",
+      this.hour.toString() + this.capitalize(this.descHour),
+    ); // => 1 Hour, 10 Hours
+    formattedDate = formattedDate.replaceAll(
+      "'HHHH'",
+      this.strHour + this.capitalize(this.descHour),
+    ); // => 01 Hour, 10 Hours
+
+    // Minute
+    formattedDate = formattedDate.replaceAll("'i'", this.minute.toString()); // => 1,2,3
+    formattedDate = formattedDate.replaceAll("'ii'", this.strMinute); // => 01,02,03
+    formattedDate = formattedDate.replaceAll(
+      "'iii'",
+      this.minute.toString() + this.descMinute,
+    ); // => 1 minute, 10 minutes
+    formattedDate = formattedDate.replaceAll(
+      "'iiii'",
+      this.strMinute + this.descMinute,
+    ); // => 01 minute, 10 minutes
+    formattedDate = formattedDate.replaceAll(
+      "'III'",
+      this.minute.toString() + this.capitalize(this.descMinute),
+    ); // => 1 Minute, 10 Minutes
+    formattedDate = formattedDate.replaceAll(
+      "'IIII'",
+      this.strMinute + this.capitalize(this.descMinute),
+    ); // => 01 Minute, 10 Minutes
+
+    // Second
+    formattedDate = formattedDate.replaceAll("'s'", this.second.toString()); // => 1,2,3
+    formattedDate = formattedDate.replaceAll("'ss'", this.strSecond); // => 01,02,03
+    formattedDate = formattedDate.replaceAll(
+      "'sss'",
+      this.second.toString() + this.descSecond,
+    ); // => 1 second, 10 seconds
+    formattedDate = formattedDate.replaceAll(
+      "'ssss'",
+      this.strSecond + this.descSecond,
+    ); // => 01 second, 10 seconds
+    formattedDate = formattedDate.replaceAll(
+      "'SSS'",
+      this.second.toString() + this.capitalize(this.descSecond),
+    ); // => 1 Second, 10 Seconds
+    formattedDate = formattedDate.replaceAll(
+      "'SSSS'",
+      this.strSecond + this.capitalize(this.descSecond),
+    ); // => 01 Second, 10 Seconds
+
+    // City
+    formattedDate = formattedDate.replaceAll("'city'", this.city); // => Marília
+
+    // Region
+    formattedDate = formattedDate.replaceAll("'region'", this.region); // => São Paulo
+    formattedDate = formattedDate.replaceAll("'regionCode'", this.regionCode); // => SP
+
+    // Country
+    formattedDate = formattedDate.replaceAll("'country'", this.country); // => Brazil
+    formattedDate = formattedDate.replaceAll("'countryCode'", this.countryCode); // => BR
+
+    return formattedDate;
+  }
 }
 
-export default new DatePtBR();
+// export default new DatePtBR(language.PT_BR);
+export default DatePtBR;

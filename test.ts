@@ -1,6 +1,7 @@
-import DatePtBR, { PT_BR } from './app2.ts';
+import DatePtBR from './app.ts';
+import { pt_BR } from './lib/languages/index.ts';
 
-const date = new DatePtBR(PT_BR);
+const date = new DatePtBR(pt_BR);
 
 interface ApiData {
   city: string;
@@ -58,12 +59,12 @@ async function testDate(): Promise<void> {
   console.log(`\ngetExtendedDateTime() =>`, date.getExtendedDateTime())
   console.log(`\ngetExtendedCityDate() =>`, await date.getExtendedCityDate())
   console.log(`\ngetExtendedRegionDate() =>`, await date.getExtendedRegionDate())
-  console.log(`\ngetExtendedShortRegionDate() =>`, await date.getExtendedShortRegionDate())
+  console.log(`\ngetExtendedShortRegionDate() =>`, await date.getExtendedRegionCodeDate())
   console.log(`\ngetExtendedCountryDate() =>`, await date.getExtendedCountryDate())
   console.log(`\ngetExtendedShortCountryDate() =>`, await date.getExtendedShortCountryDate())
   console.log(`\ngetCity() =>`, await date.getCity())
   console.log(`\ngetRegion() =>`, await date.getRegion())
-  console.log(`\ngetShortRegion() =>`, await date.getShortRegion())
+  console.log(`\ngetShortRegion() =>`, await date.getRegionCode())
   console.log(`\ngetCountry() =>`, await date.getCountry())
   console.log(`\ngetCountryCode() =>`, await date.getCountryCode())
   console.log(`\ngetTimezone() =>`, await date.getTimezone())
@@ -72,9 +73,10 @@ async function testDate(): Promise<void> {
   console.log(`\nformatPattern() =>`, await date.formatPattern("'m'/'WW'", new Date()))
   console.log(`\nformatPattern() =>`, await date.formatPattern("'m' e 'mm' e 'mmm' e 'mmmm' e 'MMM' e 'MMMM'", new Date()))
   console.log(`\nformatPattern() =>`, await date.formatPattern("'city' e 'country' e 'ww' e 'WWWW' e 'www' e 'wwww'"))
-  console.log(`\nformatPattern() =>`, await date.formatPattern("'date' e 'time'"))
+  console.log(`\nformatPattern() =>`, await date.formatPattern("'date' e 'time' / 'region' - 'regionCode' / regionCode 'regionCode'"))
 }
 
 // await getLocaleInfo();
 // test();
-testDate();
+await testDate();
+await test();
