@@ -7,10 +7,10 @@ import {
   ES,
 } from "./lib/languages/index.ts";
 
-    // Deno.readTextFile('./languages/pt_BR.json').then(data => {
-    //   const d = JSON.parse(data);
-    //   console.log(d.day)
-    // })
+// Deno.readTextFile('./languages/pt_BR.json').then(data => {
+//   const d = JSON.parse(data);
+//   console.log(d.day)
+// })
 
 interface ApiData {
   city: string;
@@ -72,6 +72,41 @@ class DatePtBR {
   private sepDate: string;
   private sepTime: string;
 
+  // Translate variables
+  private daySingular: string;
+  private dayPlural: string;
+  private hourSingular: string;
+  private hourPlural: string;
+  private minuteSingular: string;
+  private minutePlural: string;
+  private secondSingular: string;
+  private secondPlural: string;
+  private weekdaySingular: string;
+  private weekdayPlural: string;
+  private weekday1: string;
+  private weekday2: string;
+  private weekday3: string;
+  private weekday4: string;
+  private weekday5: string;
+  private weekday6: string;
+  private weekday7: string;
+  private monthSingular: string;
+  private monthPlural: string;
+  private month1: string;
+  private month2: string;
+  private month3: string;
+  private month4: string;
+  private month5: string;
+  private month6: string;
+  private month7: string;
+  private month8: string;
+  private month9: string;
+  private month10: string;
+  private month11: string;
+  private month12: string;
+  private yearSingular: string;
+  private yearPlural: string;
+
   // Language
   private language: LanguageType;
 
@@ -117,11 +152,91 @@ class DatePtBR {
     this.sepDate = "";
     this.sepTime = "";
 
+    // Translate variables
+    this.daySingular = "";
+    this.dayPlural = "";
+    this.hourSingular = "";
+    this.hourPlural = "";
+    this.minuteSingular = "";
+    this.minutePlural = "";
+    this.secondSingular = "";
+    this.secondPlural = "";
+    this.weekdaySingular = "";
+    this.weekdayPlural = "";
+    this.weekday1 = "";
+    this.weekday2 = "";
+    this.weekday3 = "";
+    this.weekday4 = "";
+    this.weekday5 = "";
+    this.weekday6 = "";
+    this.weekday7 = "";
+    this.monthSingular = "";
+    this.monthPlural = "";
+    this.month1 = "";
+    this.month2 = "";
+    this.month3 = "";
+    this.month4 = "";
+    this.month5 = "";
+    this.month6 = "";
+    this.month7 = "";
+    this.month8 = "";
+    this.month9 = "";
+    this.month10 = "";
+    this.month11 = "";
+    this.month12 = "";
+    this.yearSingular = "";
+    this.yearPlural = "";
+
     // Language
     this.language = language;
 
     // Set config variables
     this.setDefaultConfig(language);
+
+    // Translate
+    this.translate(language);
+  }
+
+  public translate(language: LanguageType): void {
+    const decoder = new TextDecoder("utf-8");
+    console.log(`./lib/languages/${language}/${language}.json`)
+    const file = Deno.readFileSync(`./lib/languages/${language}/${language}.json`);
+    const decodedFile = decoder.decode(file);
+    const data = JSON.parse(decodedFile);
+
+    this.daySingular = data.day.singular;
+    this.dayPlural = data.day.plural;
+    this.hourSingular = data.hour.singular;
+    this.hourPlural = data.hour.plural;
+    this.minuteSingular = data.minute.singular;
+    this.minutePlural = data.minute.plural;
+    this.secondSingular = data.second.singular;
+    this.secondPlural = data.second.plural;
+    this.weekdaySingular = data.week.singular;
+    this.weekdayPlural = data.week.plural;
+    this.weekday1 = data.week.weekDay[0];
+    this.weekday2 = data.week.weekDay[1];
+    this.weekday3 = data.week.weekDay[2];
+    this.weekday4 = data.week.weekDay[3];
+    this.weekday5 = data.week.weekDay[4];
+    this.weekday6 = data.week.weekDay[5];
+    this.weekday7 = data.week.weekDay[6];
+    this.monthSingular = data.month.singular;
+    this.monthPlural = data.month.plural;
+    this.month1 = data.month.months[0];
+    this.month2 = data.month.months[1];
+    this.month3 = data.month.months[2];
+    this.month4 = data.month.months[3];
+    this.month5 = data.month.months[4];
+    this.month6 = data.month.months[5];
+    this.month7 = data.month.months[6];
+    this.month8 = data.month.months[7];
+    this.month9 = data.month.months[8];
+    this.month10 = data.month.months[9];
+    this.month11 = data.month.months[10];
+    this.month12 = data.month.months[11];
+    this.yearSingular = data.year.singular;
+    this.yearPlural = data.year.plural;
   }
 
   // Set default config variables
@@ -181,75 +296,75 @@ class DatePtBR {
         this.strSecond = "0" + this.second.toString();
       } else this.strSecond = this.second.toString();
 
-      if (this.hour !== 1) this.descHour = "horas";
-      else this.descHour = "hora";
+      if (this.hour !== 1) this.descHour = this.hourPlural;
+      else this.descHour = this.hourSingular;
 
-      if (this.minute !== 1) this.descMinute = "minutos";
-      else this.descMinute = "minuto";
+      if (this.minute !== 1) this.descMinute = this.minutePlural;
+      else this.descMinute = this.minuteSingular;
 
-      if (this.second !== 1) this.descSecond = "segundos";
-      else this.descSecond = "segundo";
+      if (this.second !== 1) this.descSecond = this.secondPlural;
+      else this.descSecond = this.secondSingular;
 
       switch (this.weekdayNumber) {
         case 1:
-          this.weekday = "domingo";
+          this.weekday = this.weekday1;
           break;
         case 2:
-          this.weekday = "segunda";
+          this.weekday = this.weekday2;
           break;
         case 3:
-          this.weekday = "terça";
+          this.weekday = this.weekday3;
           break;
         case 4:
-          this.weekday = "quarta";
+          this.weekday = this.weekday4;
           break;
         case 5:
-          this.weekday = "quinta";
+          this.weekday = this.weekday5;
           break;
         case 6:
-          this.weekday = "sexta";
+          this.weekday = this.weekday6;
           break;
         case 7:
-          this.weekday = "sábado";
+          this.weekday = this.weekday7;
           break;
       }
 
       switch (this.monthNumber) {
         case 1:
-          this.month = "janeiro";
+          this.month = this.month1;
           break;
         case 2:
-          this.month = "fevereiro";
+          this.month = this.month2;
           break;
         case 3:
-          this.month = "março";
+          this.month = this.month3;
           break;
         case 4:
-          this.month = "abril";
+          this.month = this.month4;
           break;
         case 5:
-          this.month = "maio";
+          this.month = this.month5;
           break;
         case 6:
-          this.month = "junho";
+          this.month = this.month6;
           break;
         case 7:
-          this.month = "julho";
+          this.month = this.month7;
           break;
         case 8:
-          this.month = "agosto";
+          this.month = this.month8;
           break;
         case 9:
-          this.month = "setembro";
+          this.month = this.month9;
           break;
         case 10:
-          this.month = "outubro";
+          this.month = this.month10;
           break;
         case 11:
-          this.month = "novembro";
+          this.month = this.month11;
           break;
         case 12:
-          this.month = "dezembro";
+          this.month = this.month12;
           break;
       }
 
@@ -551,7 +666,10 @@ class DatePtBR {
     formattedDate = formattedDate.replaceAll("'dd'", this.strDay); // => 01, 02
 
     // Month
-    formattedDate = formattedDate.replaceAll("'m'", this.monthNumber.toString()); // => 1, 2
+    formattedDate = formattedDate.replaceAll(
+      "'m'",
+      this.monthNumber.toString(),
+    ); // => 1, 2
     formattedDate = formattedDate.replaceAll("'mm'", this.strMonthNumber); // => 01, 02
     formattedDate = formattedDate.replaceAll("'mmm'", this.getShortMonth()); // => jan
     formattedDate = formattedDate.replaceAll("'mmmm'", this.month); // => janeiro
@@ -566,10 +684,16 @@ class DatePtBR {
 
     // Year
     formattedDate = formattedDate.replaceAll("'yyyy'", this.year.toString()); // => 2020
-    formattedDate = formattedDate.replaceAll("'yy'", this.getShortYear.toString()); // => 20
+    formattedDate = formattedDate.replaceAll(
+      "'yy'",
+      this.getShortYear.toString(),
+    ); // => 20
 
     // Week
-    formattedDate = formattedDate.replaceAll("'w'", this.weekdayNumber.toString()); // => 1,2,3
+    formattedDate = formattedDate.replaceAll(
+      "'w'",
+      this.weekdayNumber.toString(),
+    ); // => 1,2,3
     formattedDate = formattedDate.replaceAll("'ww'", this.getShortWeekday()); // => seg, ter, qua
     formattedDate = formattedDate.replaceAll("'www'", this.weekday); // => segunda, terça, quarta
     formattedDate = formattedDate.replaceAll("'wwww'", this.weekday + "-feira"); // => segunda-feira, terça-feira, quarta-feira
